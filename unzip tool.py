@@ -26,7 +26,7 @@ def unzip_file(filepath):
         rar.extractall()
     elif filepath.endswith(".7z"):
         flag_del = False
-        with py7zr.SevenZipFile(filepath, mode='r', password = 'ＡＬＸＹ１２３') as z:
+        with py7zr.SevenZipFile(filepath, mode='r', password = '4004') as z:
             countRootDir = 0
             countRootFile = 0
             rootFile = ''
@@ -54,8 +54,9 @@ def unzip_file(filepath):
                     unzip_file(new_path)
             # 反之如果不止一个文件，就在压缩文件所在目录下创建一个新目录，将压缩文件解压缩到这个新目录中
             else:
-                new_path, _ = os.path.splitext(filepath)
-                new_path, _ = os.path.splitext(new_path) if '.' in new_path else 0
+                new_path = filepath
+                while('.' not in new_path):
+                    new_path, _ = os.path.splitext(new_path)
                 os.mkdir(new_path) if not os.path.exists(new_path) else 0
                 try:
                     z.extractall(new_path)
