@@ -3,15 +3,24 @@ bin-debug/
 bin-release/
 [Oo]bj/
 [Bb]in/
+[Dd]ist/
 
 # Other files and folders
 .settings/
+CNN/
+
+# programming environment
+__pycache__/
+
 
 # Executables
 *.swf
 *.air
 *.ipa
 *.apk
+
+/*
+!/*.py
 
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
