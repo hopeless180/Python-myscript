@@ -120,7 +120,7 @@ def doffmpeg(state, **kwargs) -> None:
 if __name__ == "__main__":
     # srcfolder = r"g://MapleHutCat"
     # dstfolder = r"g://MapleHutCat"
-    src = "E:\\车\\同人3D"
+    src = "E:\\YeYeBirdie(イェイェバルディ)"
     for folder in tqdm(os.listdir(src), desc='根目录'):
         srcfolder = os.path.join(src, folder)
         dstfolder = os.path.join(src, folder)

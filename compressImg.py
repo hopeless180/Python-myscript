@@ -5,12 +5,16 @@ from PyQt6.QtCore import Qt
 import webp
 import os
 from subprocess import run
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QGridLayout, QTextEdit, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QGridLayout, QTextEdit, QPushButton, QFileDialog
+import sys
+from pathlib import Path
+import json
 
 
 # 多线程测试后cwebp最佳，pil其次但相差不多
 
 DST = ""
+JSON = ""
 
 class test_compression_with_time():
     def __init__(self) -> None:
@@ -53,13 +57,51 @@ class test_compression_with_time():
 class mainWindow(QWidget):
     def __init__(self, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
+        self.cache = {}
+        self.load_from_cache()
         self.initUI()
     
-    def initUI():
+    def initUI(self):
+        grid = QGridLayout()
+        # grid.setSpacing()
+        walkDir_btn = QPushButton('遍历整个目录的文件')
+        listDir_btn = QPushButton('只压缩目录下的文件')
+        saveCache_btn = QPushButton('保存缓存')
+        grid.addWidget(walkDir_btn, 1, 0)
+        grid.addWidget(listDir_btn, 2, 0)
+        grid.addWidget(saveCache_btn, 3, 0)
+        self.setLayout(grid)
+        self.setGeometry(300, 300, 350, 300)
+        self.setWindowTitle('Review')
+        walkDir_btn.clicked.connect(self.click_walkdir_btn)
+        listDir_btn.clicked.connect(self.click_listdir_btn)
+        self.show()
+
+    def click_walkdir_btn(self):
+        home_dir = self.cache['home_dir'] if self.cache else str(Path.home())
+        fName = QFileDialog.getExistingDirectory(self, 'Open file', home_dir)
+
+    def click_listdir_btn(self):
+        home_dir = self.cache['home_dir'] if self.cache else str(Path.home())
+        fName = QFileDialog.getExistingDirectory(self, "Open file", home_dir)
+
+    def save_to_cache(self):
+        data = self.cache
+        json_path = Path(__file__).absolute().parent.parent / "cache.json"
+        with open(json_path, 'w+') as f:
+            json.dump(data, f)
+    
+    def load_from_cache(self):
+        json_path = Path(__file__).absolute().parent.parent / "cache.json"
+        with open(json_path, 'r+') as f:
+            data = json.load(f)
+        self.cache = data.copy()
 
     
 def main():
     pass
 
 if __name__ == '__main__':
-    pass
+    app = QApplication(sys.argv)
+    ex = mainWindow()
+    sys.exit(app.exec())

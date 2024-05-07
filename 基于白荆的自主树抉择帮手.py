@@ -31,10 +31,28 @@ def initgraph():
     nx.draw(G, pos, with_labels=True, arrows=True)
     plt.show()
 
+class node:
+    def __init__(self, name = ""):
+        self.nextNode = None
+        self.name = name
+    def setNextNode(self, nextNode):
+        self.nextNode = nextNode
+    def getNextNode(self):
+        return self.nextNode
+    
+    
+
 
 def main():
     return 0
 
 if __name__ == '__main__':
-    initgraph()
-    pass
+    start = node("开始")
+    end = node("结束")
+    start.setNextNode(end)
+    print(start.nextNode.name.center(6))
+    print("|".center(6))
+    print("|".center(6))
+    print("|".center(6))
+    print("|".center(6))
+    print(start.name.center(6))
