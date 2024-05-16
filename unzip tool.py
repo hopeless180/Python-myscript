@@ -7,26 +7,52 @@ import tarfile
 from tkinter import filedialog
 import shutil
 
-def unzip_file(filepath):
-    filepath = str(filepath)
+from pathlib import Path
+
+def create_folder(root, name):
+    filepath = os.path.join(root, name)
+    path_ = Path(filepath)
+    root_ = path_.parent
+    name_ = path_.name
+    stem_ = path_.stem
+    suffix_ = path_.suffix
+    if os.path.exists(filepath):
+        stem_new = path_.with_stem(stem_ + '_temp')
+        os.makedirs(root_ / stem_new)
+        return root_ / stem_new
+    else:
+        os.makedirs(root_ / name_)
+        return root_ / name_
+
+def unzip_file(filepath, pwd = None):
+    root = str(Path(filepath).parent)
+    stem = Path(filepath).stem
+    filepath = str(filepath) 
     if filepath.endswith(".zip"):
-        ## zip部分还没写完
-        ## 未完成！！！
-        with zipfile.ZipFile(filepath, 'r') as zip_ref:
-            xx = zip_ref.infolist()
-            zip_ref.extractall()
-            for info in zip_ref.infolist():
-                if info.is_dir():
-                    unzip_file(info.filename)
+        with zipfile.ZipFile(filepath, mode='r') as zip_ref:
+            file_extred = zip_ref.infolist()
+            if len(file_extred) > 1:
+                root = create_folder(root, stem)
+            try:
+                zip_ref.extractall(path=root, pwd=pwd)
+            except Exception as e:
+                print(e)
+            else: 
+                os.remove(filepath)
+            for file in file_extred:
+                if not file.compress_type:
+                    continue
+                unzip_file(os.path.join(root, file.filename))
     elif filepath.endswith(".rar"):
         ## rar部分还没写完
         ## 未完成！！！
-        rar = rarfile.RarFile(filepath)
-        info = rar.infolist()
-        rar.extractall()
+        # rar = rarfile.RarFile(filepath)
+        # info = rar.infolist()
+        # rar.extractall()
+        pass 
     elif filepath.endswith(".7z"):
         flag_del = False
-        with py7zr.SevenZipFile(filepath, mode='r', password = '4004') as z:
+        with py7zr.SevenZipFile(filepath, mode='r', password = '') as z:
             countRootDir = 0
             countRootFile = 0
             rootFile = ''
@@ -50,7 +76,7 @@ def unzip_file(filepath):
                     flag_del = True
                 if countRootFile == 1:
                     new_path = os.path.join(os.path.dirname(filepath), rootFile)
-                    new_path = preStep(new_path)
+                    new_path = fixSuffix(new_path)
                     unzip_file(new_path)
             # 反之如果不止一个文件，就在压缩文件所在目录下创建一个新目录，将压缩文件解压缩到这个新目录中
             else:
@@ -110,7 +136,7 @@ def isZIP(path):
     return 'zip' if magic_number in [b'\x50\x4B\x03\x04', b'\x50\x4B\x05\x06', b'\x50\x4B\x07\x08'] else ''
         
 
-def preStep(path):
+def fixSuffix(path):
     new_name = path = str(path)
     _, ext = os.path.splitext(path)
     fileType = getTypeOfCompressedFile(path)
@@ -121,8 +147,12 @@ def preStep(path):
 
 
 if __name__ == "__main__":
-    file_path = filedialog.askopenfilenames()
-    file_path = [x for x in file_path]
-    for x in file_path:
-        x = preStep(x)
-        unzip_file(x)
+    # file_path = filedialog.askopenfilenames()
+    # file_path = [x for x in file_path]
+    # file_path = filedialog.askdirectory()
+    file_path = 'g:\煌星'
+    for root, dirs, files in os.walk(file_path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            new_file_path = fixSuffix(file_path)
+            unzip_file(new_file_path)

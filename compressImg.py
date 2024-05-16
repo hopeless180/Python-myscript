@@ -93,9 +93,10 @@ class mainWindow(QWidget):
     
     def load_from_cache(self):
         json_path = Path(__file__).absolute().parent.parent / "cache.json"
-        with open(json_path, 'r+') as f:
-            data = json.load(f)
-        self.cache = data.copy()
+        if os.path.exists(json_path):
+            with open(json_path, 'r') as f:
+                data = json.load(f)
+                self.cache = data.copy()
 
     
 def main():
